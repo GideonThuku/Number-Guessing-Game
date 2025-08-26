@@ -21,7 +21,7 @@ This project demonstrates:
 ### 🎲 Game Interface  
 ![Number Guessing Game](assets/images/numgame.png)  
 
-### 🎉 Winning / Gameplay Example  
+### Gameplay Example  
 ![Winning Screen](assets/images/numgame1.png)  
 
 ---
