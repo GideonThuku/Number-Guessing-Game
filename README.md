@@ -53,7 +53,7 @@ This project demonstrates:
 ## 🕹️ How It Works  
 1. Enter a number into the input field.  
 2. Click **Submit** or press **Enter**.  
-3. If your number is between **44 and 50**, you win 🎉.  
+3. If your number is between **a certain range**, you win 🎉.  
 4. Otherwise, you lose one attempt.  
 5. You have **10 attempts** total.  
 6. Click **Reset** to restart anytime.  
