@@ -31,7 +31,7 @@ This project demonstrates:
   Smooth gradient background with glowing UI effects.  
 
 - 🎲 **Guess Any Number**  
-  No hints are given — only few numbers are correct.  
+  No hints are given, only few numbers are correct.  
 
 - ⏳ **Attempts Counter**  
   Players have **10 attempts** to win.  
