@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Number Guessing Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* ===== Techy blue theme variables ===== */
+    :root{
+      --blue-1:#001323;
+      --blue-2:#0b1f3b;
+      --blue-3:#0f2542;
+      --cyan:#00d4ff;
+      --cyan-soft:#7ed6ff;
+      --teal:#1abc9c;
+      --text:#eaf2ff;
+      --accent:#ffd166;
+      --border:#1e6bb8;
+    }
+
+    /* ===== Animated gradient background (no page image) ===== */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      background: linear-gradient(120deg, var(--blue-1), var(--blue-2), var(--blue-3));
+      background-size: 200% 200%;
+      animation: floatBg 12s ease-in-out infinite;
+      z-index:-1;
+    }
+    @keyframes floatBg{
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    /* ===== Layout: fully centered ===== */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      display:flex;
+      align-items:center;       /* vertical center */
+      justify-content:center;   /* horizontal center */
+      text-align:center;        /* center text */
+      padding: 40px 16px;
+    }
+
+    /* ===== Card ===== */
+    .game-card {
+      position: relative;
+      width: 100%;
+      max-width: 560px;
+      background: rgba(10, 20, 40, 0.88);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 22px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+      backdrop-filter: blur(6px);
+      transition: transform .2s ease, box-shadow .2s ease;
+      display:flex;
+      flex-direction:column;
+      align-items:center;  /* center inner items */
+      justify-content:center;
+    }
+    .game-card:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 22px 50px rgba(0,0,0,0.45);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      color: var(--cyan);
+      text-shadow: 0 0 10px rgba(0,212,255,0.35);
+    }
+    h2 {
+      margin: 6px 0 18px;
+      font-size: 22px;
+      color: var(--cyan-soft);
+    }
+    .hint {
+      margin: 8px 0 18px;
+      color: #b8d7ff;
+    }
+
+    /* ===== Controls (centered) ===== */
+    .controls {
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      justify-items: center;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 16px;
+      border: 2px solid var(--cyan);
+      border-radius: 10px;
+      background: var(--blue-3);
+      color: var(--text);
+      outline: none;
+      text-align: center;
+      transition: box-shadow .2s ease, border-color .2s ease;
+    }
+    input[type="number"]:focus {
+      box-shadow: 0 0 14px rgba(0,212,255,0.45);
+      border-color: var(--teal);
+    }
+
+    .btn {
+      padding: 12px 18px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background: var(--cyan);
+      color: #001323;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.1s ease, background 0.2s ease, box-shadow .2s ease, opacity .2s ease;
+      box-shadow: 0 6px 16px rgba(0,212,255,0.25);
+    }
+    .btn:hover { background: var(--teal); color:#fff; }
+    .btn:active { transform: scale(0.98); }
+    .btn[disabled]{ opacity:.5; cursor:not-allowed }
+
+    .row {
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;
+      align-items:center; justify-content:center; /* centered row */
+    }
+
+    /* ===== Message / status ===== */
+    #message {
+      margin-top: 16px;
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--accent);
+      min-height: 24px;
+    }
+
+    /* ===== Attempts meter ===== */
+    .meter-wrap{
+      margin-top: 14px;
+      width: 100%;
+      max-width: 420px;
+      background: #0c1b32;
+      border: 1px solid #214a86;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-left:auto; margin-right:auto;  /* center the bar block */
+    }
+    .meter-bar{
+      height: 12px;
+      width: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--cyan));
+      transform-origin: left center;
+      transition: transform .25s ease;
+    }
+    .meter-label{
+      margin-top:6px; font-size:14px; color:#a8c7ff;
+      display:flex; justify-content:space-between;
+      width: 100%; max-width: 420px;
+      margin-left:auto; margin-right:auto; /* center the label row */
+    }
+
+    /* ===== Success burst ===== */
+    .burst {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .burst.show { animation: burst .6s ease-out forwards; }
+    @keyframes burst{
+      0%{opacity:0; box-shadow: 0 0 0 0 rgba(0,212,255,0.0)}
+      20%{opacity:1; box-shadow: 0 0 0 8px rgba(0,212,255,0.25)}
+      100%{opacity:0; box-shadow: 0 0 0 24px rgba(26,188,156,0.0)}
+    }
+
+    /* ===== Creative image badge (interactive) =====
+       - Uses assets/images/back.jpeg
+       - Rotates slowly
+       - On card hover: brighten & enlarge slightly
+       - On click: pause/resume rotation and toggle brightness
+    */
+    .art-badge{
+      position: absolute;
+      top: -36px; right: -36px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: url("assets/images/back.jpeg") center / cover no-repeat;
+      opacity: .28;
+      filter: saturate(1.15) blur(.2px);
+      mix-blend-mode: screen;
+      animation: spin 22s linear infinite;
+      transition: transform .35s ease, opacity .35s ease, filter .35s ease;
+      border: 1px solid rgba(0,212,255,0.35);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+    .game-card:hover .art-badge{
+      opacity: .42;
+      transform: scale(1.06) rotate(8deg);
+      filter: saturate(1.25);
+    }
+    .art-badge.paused{
+      animation-play-state: paused;
+      opacity: .6;
+      filter: saturate(1.35) contrast(1.05);
+    }
+    @keyframes spin{
+      to{ transform: rotate(360deg); }
+    }
+
+    footer {
+      margin-top: 22px;
+      font-size: 14px;
+      color: #a8c7ff;
+      opacity: 0.9;
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+  <main class="game-card" id="card">
+    <!-- Interactive image badge -->
+    <div
+      class="art-badge"
+      id="artBadge"
+      role="img"
+      aria-label="Decorative rotating art badge">
+    </div>
+
+    <div class="burst" id="burst"></div>
+
+    <h1>👋 Hey, let’s play a game.</h1>
+    <h2>🎲 Number Guessing Game</h2>
+
+    <!-- No hints, free guessing -->
+    <p class="hint">Guess any number:</p>
+
+    <div class="controls">
+      <input type="number" id="guess" placeholder="Enter a number" inputmode="numeric" />
+      <button class="btn" id="submitBtn">Submit</button>
+    </div>
+
+    <div class="row">
+      <button class="btn" id="resetBtn" title="Start a new round">Reset</button>
+      <button class="btn" id="rulesBtn" title="Show how it works">How it works</button>
+    </div>
+
+    <div class="meter-wrap" aria-hidden="true">
+      <div class="meter-bar" id="meterBar" style="transform:scaleX(1)"></div>
+    </div>
+    <div class="meter-label">
+      <span>Attempts Left</span><span id="attemptsLabel">10</span>
+    </div>
+
+    <p id="message"></p>
+
+    <footer>
+      Made by <strong>Gideon Thuku</strong> • Thank you for playing
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
