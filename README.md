@@ -19,10 +19,10 @@ This project demonstrates:
 ## 📸 Screenshots  
 
 ### 🎲 Game Interface  
-![Number Guessing Game](assets/images/numgame.jpeg)  
+![Number Guessing Game](assets/images/numgame.png)  
 
 ### 🎉 Winning / Gameplay Example  
-![Winning Screen](assets/images/numgame1.jpeg)  
+![Winning Screen](assets/images/numgame1.png)  
 
 ---
 
